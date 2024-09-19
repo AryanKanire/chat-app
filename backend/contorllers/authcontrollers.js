@@ -67,7 +67,7 @@ module.exports.login = async(req,res)=>{
         const ispasswordcorrect = await bcrypt.compare(password,user?.password || "");
 
         if(!user || !ispasswordcorrect){
-            res.status(400).json({error:"Invaild password or username"});
+            return res.status(400).json({error:"Invaild password or username"});
         }
 
         genratetokenandcookie(user._id,res);
