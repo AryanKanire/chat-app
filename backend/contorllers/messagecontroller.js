@@ -1,6 +1,7 @@
 
 const Conversation = require("../models/coversationmodel");
 const Message = require("../models/messagemodel");
+const { getReciversocket, io } = require("../socket/socket");
 
 module.exports.sendmessage = async(req,res)=>{
 try {
@@ -31,7 +32,14 @@ try {
     // await conversation.save();
     // await newmessage.save();
 
-    Promise.all([conversation.save(),newmessage.save()])  //they will run parllely so wont take time
+    await Promise.all([conversation.save(),newmessage.save()])  //they will run parllely so wont take time
+
+    const receiverSocketId = getReciversocket(receiverId);
+
+    if(receiverSocketId){
+        //io.to() send to specific client
+        io.to(receiverSocketId).emit("newMessage",newmessage)
+    }
 
     res.status(200).json(newmessage);
 
